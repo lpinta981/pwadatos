@@ -1,11 +1,11 @@
 self.addEventListener('install', function(event) {
     event.waitUntil(
-        caches.open('proyectos-v1').then(function(cache) {
+        caches.open('pwadatos-v1').then(function(cache) {
             return cache.addAll([
                 './',
                 './index.html',
                 './manifest.json',
-                'https://i.postimg.cc/kDrmdkK3/TRANSPARENTE.jpg'
+                'https://i.postimg.cc/Gpk4qZx4/LOGO-MANA-SAKILLA-3.png'
             ]);
         })
     );
