@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recibo Ferretería</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: white;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .info {
+            text-align: right;
+        }
+        .receipt-title {
+            text-align: center;
+            font-size: 22px;
+            margin: 20px 0;
+            color: #2c3e50;
+        }
+        .details {
+            margin-bottom: 30px;
+        }
+        .customer-details, .receipt-details {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .detail-column {
+            flex-basis: 48%;
+        }
+        .detail-item {
+            margin-bottom: 10px;
+        }
+        .detail-label {
+            font-weight: bold;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th {
+            background-color: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 2px solid #ddd;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        .item-row:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .quantity {
+            text-align: center;
+        }
+        .price, .subtotal {
+            text-align: right;
+        }
+        .totals {
+            margin-top: 20px;
+            text-align: right;
+        }
+        .total-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 5px;
+        }
+        .total-label {
+            font-weight: bold;
+            width: 150px;
+            text-align: left;
+        }
+        .total-value {
+            width: 100px;
+            text-align: right;
+        }
+        .grand-total {
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            border-top: 2px solid #ddd;
+            padding-top: 10px;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .barcode {
+            margin-top: 30px;
+            text-align: center;
+        }
+        @media print {
+            body {
+                background-color: white;
+            }
+            .container {
+                box-shadow: none;
+                margin: 0;
+                padding: 15px;
+                max-width: 100%;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">FERRETERÍA <span id="nombreTienda">MANA SAKILLA</span></div>
+            <div class="info">
+                <div id="direccionTienda">Av. Principal #123, Ciudad</div>
+                <div id="telefonoTienda">Tel: (123) 456-7890</div>
+                <div id="emailTienda">info@tornillofeliz.com</div>
+            </div>
+        </div>
+
+        <div class="receipt-title">RECIBO DE COMPRA</div>
+
+        <div class="details">
+            <div class="customer-details">
+                <div class="detail-column">
+                    <div class="detail-item">
+                        <div class="detail-label">CLIENTE:</div>
+                        <div id="nombreCliente">Juan Pérez</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">DIRECCIÓN:</div>
+                        <div id="direccionCliente">Calle Segunda #456, Ciudad</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">TELÉFONO:</div>
+                        <div id="telefonoCliente">(123) 789-4560</div>
+                    </div>
+                </div>
+                <div class="detail-column">
+                    <div class="detail-item">
+                        <div class="detail-label">RECIBO NO.:</div>
+                        <div id="numeroRecibo">FT-12345</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">FECHA:</div>
+                        <div id="fechaRecibo">17/03/2025</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">MÉTODO DE PAGO:</div>
+                        <div id="metodoPago">Efectivo</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th width="10%">CANT.</th>
+                    <th width="50%">DESCRIPCIÓN</th>
+                    <th width="20%">PRECIO UNIT.</th>
+                    <th width="20%">SUBTOTAL</th>
+                </tr>
+            </thead>
+            <tbody id="itemsTabla">
+                <!-- Los items se agregarán dinámicamente aquí -->
+            </tbody>
+        </table>
+
+        <div class="totals">
+            <div class="total-row">
+                <div class="total-label">Subtotal:</div>
+                <div class="total-value" id="subtotal">$0.00</div>
+            </div>
+            <div class="total-row">
+                <div class="total-label">Descuento:</div>
+                <div class="total-value" id="descuento">$0.00</div>
+            </div>
+            <div class="total-row grand-total">
+                <div class="total-label">TOTAL:</div>
+                <div class="total-value" id="total">$0.00</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p id="notasAdicionales">Gracias por su compra. Todos los productos tienen garantía de 30 días.</p>
+            <p>Este recibo sirve como comprobante de compra.</p>
+            <div id="firmaTienda">FERRETERÍA MANA SAKILLA</div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Función para obtener parámetros de la URL
+            function getParameterByName(name, url = window.location.href) {
+                name = name.replace(/[\[\]]/g, '\\$&');
+                var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                    results = regex.exec(url);
+                if (!results) return null;
+                if (!results[2]) return '';
+                return decodeURIComponent(results[2].replace(/\+/g, ' '));
+            }
+
+            // Función para formatear números como dinero
+            function formatMoney(amount) {
+                return '$' + parseFloat(amount).toFixed(2);
+            }
+
+            // Actualizar información de la tienda
+            document.getElementById('nombreTienda').textContent = getParameterByName('nombreTienda') || 'MANA SAKILLA';
+            document.getElementById('direccionTienda').textContent = getParameterByName('direccionTienda') || 'Av. Principal #123, Ciudad';
+            document.getElementById('telefonoTienda').textContent = 'Tel: ' + (getParameterByName('telefonoTienda') || '(123) 456-7890');
+            document.getElementById('emailTienda').textContent = getParameterByName('emailTienda') || 'info@tornillofeliz.com';
+            
+            // Actualizar información del cliente
+            document.getElementById('nombreCliente').textContent = getParameterByName('nombreCliente') || 'Juan Pérez';
+            document.getElementById('direccionCliente').textContent = getParameterByName('direccionCliente') || 'Calle Segunda #456, Ciudad';
+            document.getElementById('telefonoCliente').textContent = getParameterByName('telefonoCliente') || '(123) 789-4560';
+            
+            // Actualizar detalles del recibo
+            document.getElementById('numeroRecibo').textContent = getParameterByName('numeroRecibo') || 'FT-12345';
+            document.getElementById('fechaRecibo').textContent = getParameterByName('fechaRecibo') || new Date().toLocaleDateString();
+            document.getElementById('metodoPago').textContent = getParameterByName('metodoPago') || 'Efectivo';
+            
+            // Obtener y procesar los items
+            let items = [];
+            let itemsStr = getParameterByName('items');
+            
+            if (itemsStr) {
+                try {
+                    items = JSON.parse(itemsStr);
+                } catch (e) {
+                    console.error('Error parsing items:', e);
+                }
+            } else {
+                // Ejemplo de items si no se proporcionan
+                items = [
+                    {cantidad: 5, descripcion: "Tornillos hex. 1/4\"", precio: 0.50},
+                    {cantidad: 2, descripcion: "Martillo profesional", precio: 15.75},
+                    {cantidad: 1, descripcion: "Serrucho 12\"", precio: 12.99}
+                ];
+            }
+            
+            // Calcular totales y agregar items a la tabla
+            let subtotal = 0;
+            const tabla = document.getElementById('itemsTabla');
+            
+            items.forEach(item => {
+                const cantidad = parseFloat(item.cantidad);
+                const precio = parseFloat(item.precio);
+                const itemSubtotal = cantidad * precio;
+                subtotal += itemSubtotal;
+                
+                const row = document.createElement('tr');
+                row.className = 'item-row';
+                row.innerHTML = `
+                    <td class="quantity">${cantidad}</td>
+                    <td>${item.descripcion}</td>
+                    <td class="price">${formatMoney(precio)}</td>
+                    <td class="subtotal">${formatMoney(itemSubtotal)}</td>
+                `;
+                tabla.appendChild(row);
+            });
+            
+            // Actualizar totales
+            const descuentoValor = parseFloat(getParameterByName('descuento') || 0);
+            const total = subtotal - descuentoValor;
+            
+            document.getElementById('subtotal').textContent = formatMoney(subtotal);
+            document.getElementById('descuento').textContent = formatMoney(descuentoValor);
+            document.getElementById('total').textContent = formatMoney(total);
+            
+            // Actualizar notas adicionales
+            const notas = getParameterByName('notas');
+            if (notas) {
+                document.getElementById('notasAdicionales').textContent = notas;
+            }
+            
+            // Actualizar firma de la tienda
+            document.getElementById('firmaTienda').textContent = getParameterByName('nombreTienda') || 'FERRETERÍA EL TORNILLO FELIZ';
+        });
+
+        // Función para imprimir el recibo
+        function imprimirRecibo() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
