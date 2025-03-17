@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrato Laboral</title>
+    <!-- Incluimos jsPDF desde CDN para generar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Incluimos html2canvas para convertir HTML a imagen para el PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .contract-container {
+            background-color: white;
+            padding: 40px;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 20px;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 16px;
+            color: #7f8c8d;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-weight: bold;
+            font-size: 18px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        .clause {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        .clause-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .signature-section {
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .signature-box {
+            flex-basis: 45%;
+            text-align: center;
+            margin-top: 40px;
+        }
+        .signature-line {
+            border-top: 1px solid #333;
+            margin-top: 50px;
+            padding-top: 10px;
+        }
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            .contract-container {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Pantalla de carga -->
+    <div class="loading-screen" id="loading">
+        <div class="spinner"></div>
+        <p>Generando contrato laboral...</p>
+    </div>
+
+    <div class="contract-container" id="contractContent">
+        <div class="header">
+            <div class="title">CONTRATO INDIVIDUAL DE TRABAJO</div>
+            <div class="subtitle" id="subtituloContrato">TÉRMINO INDEFINIDO</div>
+        </div>
+
+        <div class="section">
+            <p>
+                En <span id="ciudadContrato">CIUDAD</span>, a los <span id="diaContrato">DÍAS</span> días del mes de <span id="mesContrato">MES</span> del año <span id="anioContrato">AÑO</span>, 
+                comparecen para la celebración del presente contrato individual de trabajo, por una parte, 
+                <strong><span id="nombreEmpresa">NOMBRE DE LA EMPRESA</span></strong>, con RFC <span id="rfcEmpresa">RFC-EMPRESA</span>, 
+                representada legalmente por <strong><span id="representanteLegal">NOMBRE DEL REPRESENTANTE</span></strong>, 
+                en su calidad de <span id="cargoRepresentante">CARGO</span>, a quien en lo sucesivo se le denominará "EL EMPLEADOR";
+                y por otra parte, <strong><span id="nombreEmpleado">NOMBRE DEL EMPLEADO</span></strong>, 
+                con <span id="tipoIdentificacion">IDENTIFICACIÓN</span> número <span id="numeroIdentificacion">NÚMERO DE ID</span>, 
+                a quien en lo sucesivo se le denominará "EL TRABAJADOR".
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">CLÁUSULAS</div>
+            
+            <div class="clause">
+                <div class="clause-title">PRIMERA - OBJETO DEL CONTRATO</div>
+                <p>
+                    EL EMPLEADOR contrata los servicios personales de EL TRABAJADOR para que desempeñe el cargo de 
+                    <strong><span id="cargoEmpleado">CARGO DEL EMPLEADO</span></strong> 
+                    dentro de la organización, y realice las funciones propias del cargo y las demás que le sean asignadas por 
+                    EL EMPLEADOR o sus representantes.
+                </p>
+            </div>
+            
+            <div class="clause">
+                <div class="clause-title">SEGUNDA - DURACIÓN DEL CONTRATO</div>
+                <p id="clausulaDuracion">
+                    El presente contrato se celebra por término indefinido, iniciando el día 
+                    <span id="fechaInicio">FECHA DE INICIO</span>. No obstante, cualquiera de las partes podrá darlo 
+                    por terminado en cualquier momento, dando aviso a la otra con anticipación no menor a 
+                    <span id="diasAviso">DÍAS DE AVISO</span> días calendario, o mediante el pago de los salarios 
+                    correspondientes a dicho período.
+                </p>
+            </div>
+            
+            <div class="clause">
+                <div class="clause-title">TERCERA - LUGAR DE TRABAJO</div>
+                <p>
+                    EL TRABAJADOR prestará sus servicios en las instalaciones de EL EMPLEADOR ubicadas en 
+                    <span id="direccionTrabajo">DIRECCIÓN DEL LUGAR DE TRABAJO</span>, 
+                    o en cualquier otro lugar que EL EMPLEADOR disponga dentro de la misma ciudad.
+                </p>
+            </div>
+            
+            <div class="clause">
+                <div class="clause-title">CUARTA - JORNADA DE TRABAJO</div>
+                <p>
+                    La jornada ordinaria de trabajo será de <span id="horasSemanales">HORAS</span> horas semanales, 
+                    distribuidas de <span id="jornadaDias">DÍAS</span>, en el horario de 
+                    <span id="horarioTrabajo">HORARIO</span>. 
+                    EL EMPLEADOR podrá modificar el horario de acuerdo a las necesidades del servicio, 
+                    respetando la jornada máxima legal.
+                </p>
+            </div>
+            
+            <div class="clause">
+                <div class="clause-title">QUINTA - REMUNERACIÓN</div>
+                <p>
+                    EL EMPLEADOR pagará a EL TRABAJADOR por la prestación de sus servicios, un salario mensual de 
+                    <span id="salarioMensual">MONTO</span> (<span id="salarioLetra">MONTO EN LETRA</span>), 
+                    pagaderos en periodos <span id="periodoPago">PERIODO DE PAGO</span>. En este valor se encuentra incluida 
+                    la remuneración de los descansos dominicales y festivos.
+                </p>
+            </div>
+            
+            <div class="clause">
+                <div class="clause-title">SEXTA - OBLIGACIONES DEL TRABAJADOR</div>
+                <p>
+                    Además de las obligaciones derivadas del contrato y de la ley, EL TRABAJADOR se obliga a:
+                </p>
+                <ol>
+                    <li>Cumplir con las funciones propias del cargo y las demás que le sean asignadas.</li>
+                    <li>Desempeñar el trabajo con responsabilidad, eficiencia, diligencia y honestidad.</li>
+                    <li>Acatar las órdenes e instrucciones impartidas por EL EMPLEADOR o sus representantes.</li>
+                    <li>Guardar absoluta confidencialidad sobre los asuntos que conozca en razón de sus funciones.</li>
+                    <li>Cuidar y mantener en buen estado los equipos y herramientas que le sean entregados para el desempeño de sus funciones.</li>
+                </ol>
+            </div>
+            
+            <div class="clause">
+                <div class="clause-title">SÉPTIMA - OBLIGACIONES DEL EMPLEADOR</div>
+                <p>
+                    EL EMPLEADOR se obliga a:
+                </p>
+                <ol>
+                    <li>Pagar la remuneración pactada en las condiciones, periodos y lugares convenidos.</li>
+                    <li>Proporcionar a EL TRABAJADOR los materiales, instrumentos y útiles necesarios para la realización de sus labores.</li>
+                    <li>Respetar la dignidad personal de EL TRABAJADOR, sus creencias y sentimientos.</li>
+                    <li>Brindar capacitación adecuada para el mejor desempeño de sus funciones.</li>
+                    <li>Afiliar a EL TRABAJADOR al sistema de seguridad social y realizar los aportes correspondientes.</li>
+                </ol>
+            </div>
+            
+            <div class="clause">
+                <div class="clause-title">OCTAVA - TERMINACIÓN DEL CONTRATO</div>
+                <p>
+                    Son causas de terminación de este contrato las establecidas en la legislación laboral vigente.
+                </p>
+            </div>
+
+            <div class="clause" id="clausulasAdicionales">
+                <!-- Las cláusulas adicionales se insertarán aquí dinámicamente -->
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">DISPOSICIONES FINALES</div>
+            <p>
+                Las partes acuerdan que en lo no previsto en el presente contrato se regirán por las disposiciones 
+                legales vigentes. Para constancia, y en señal de aceptación, se firma el presente contrato en dos ejemplares 
+                del mismo tenor y valor, en la ciudad y fecha indicados.
+            </p>
+        </div>
+
+        <div class="signature-section">
+            <div class="signature-box">
+                <div class="signature-line">EL EMPLEADOR</div>
+                <p><span id="nombreEmpresaFirma">NOMBRE DE LA EMPRESA</span><br>
+                Representado por: <span id="representanteLegalFirma">NOMBRE DEL REPRESENTANTE</span><br>
+                <span id="rfcEmpresaFirma">RFC-EMPRESA</span></p>
+            </div>
+            
+            <div class="signature-box">
+                <div class="signature-line">EL TRABAJADOR</div>
+                <p><span id="nombreEmpleadoFirma">NOMBRE DEL EMPLEADO</span><br>
+                <span id="tipoIdentificacionFirma">IDENTIFICACIÓN</span>: <span id="numeroIdentificacionFirma">NÚMERO DE ID</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mostrar pantalla de carga
+            document.getElementById('loading').style.display = 'flex';
+            
+            // Función para obtener parámetros de la URL
+            function getParameterByName(name, url = window.location.href) {
+                name = name.replace(/[\[\]]/g, '\\$&');
+                const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                    results = regex.exec(url);
+                if (!results) return null;
+                if (!results[2]) return '';
+                return decodeURIComponent(results[2].replace(/\+/g, ' '));
+            }
+
+            // Obtener fecha actual si no se proporciona
+            const hoy = new Date();
+            const dia = hoy.getDate();
+            const mes = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'][hoy.getMonth()];
+            const anio = hoy.getFullYear();
+            
+            // Actualizar información del contrato con los parámetros de la URL
+            // Datos básicos
+            document.getElementById('subtituloContrato').textContent = getParameterByName('tipoContrato') || 'TÉRMINO INDEFINIDO';
+            document.getElementById('ciudadContrato').textContent = getParameterByName('ciudad') || 'CIUDAD';
+            document.getElementById('diaContrato').textContent = getParameterByName('dia') || dia;
+            document.getElementById('mesContrato').textContent = getParameterByName('mes') || mes;
+            document.getElementById('anioContrato').textContent = getParameterByName('anio') || anio;
+            
+            // Datos de la empresa
+            document.getElementById('nombreEmpresa').textContent = getParameterByName('nombreEmpresa') || 'NOMBRE DE LA EMPRESA';
+            document.getElementById('rfcEmpresa').textContent = getParameterByName('rfcEmpresa') || 'RFC-EMPRESA';
+            document.getElementById('representanteLegal').textContent = getParameterByName('representante') || 'NOMBRE DEL REPRESENTANTE';
+            document.getElementById('cargoRepresentante').textContent = getParameterByName('cargoRepresentante') || 'CARGO';
+            
+            // Datos del empleado
+            document.getElementById('nombreEmpleado').textContent = getParameterByName('nombreEmpleado') || 'NOMBRE DEL EMPLEADO';
+            document.getElementById('tipoIdentificacion').textContent = getParameterByName('tipoId') || 'IDENTIFICACIÓN';
+            document.getElementById('numeroIdentificacion').textContent = getParameterByName('numId') || 'NÚMERO DE ID';
+            document.getElementById('cargoEmpleado').textContent = getParameterByName('cargo') || 'CARGO DEL EMPLEADO';
+            
+            // Detalles del contrato
+            document.getElementById('fechaInicio').textContent = getParameterByName('fechaInicio') || (dia + ' de ' + mes + ' de ' + anio);
+            document.getElementById('diasAviso').textContent = getParameterByName('diasAviso') || '30';
+            document.getElementById('direccionTrabajo').textContent = getParameterByName('direccion') || 'DIRECCIÓN DEL LUGAR DE TRABAJO';
+            document.getElementById('horasSemanales').textContent = getParameterByName('horas') || '40';
+            document.getElementById('jornadaDias').textContent = getParameterByName('dias') || 'lunes a viernes';
+            document.getElementById('horarioTrabajo').textContent = getParameterByName('horario') || '9:00 a 18:00 horas';
+            document.getElementById('salarioMensual').textContent = getParameterByName('salario') || 'MONTO';
+            document.getElementById('salarioLetra').textContent = getParameterByName('salarioLetra') || 'MONTO EN LETRA';
+            document.getElementById('periodoPago').textContent = getParameterByName('periodoPago') || 'quincenales';
+            
+            // Actualizar sección de firmas
+            document.getElementById('nombreEmpresaFirma').textContent = getParameterByName('nombreEmpresa') || 'NOMBRE DE LA EMPRESA';
+            document.getElementById('representanteLegalFirma').textContent = getParameterByName('representante') || 'NOMBRE DEL REPRESENTANTE';
+            document.getElementById('rfcEmpresaFirma').textContent = getParameterByName('rfcEmpresa') || 'RFC-EMPRESA';
+            document.getElementById('nombreEmpleadoFirma').textContent = getParameterByName('nombreEmpleado') || 'NOMBRE DEL EMPLEADO';
+            document.getElementById('tipoIdentificacionFirma').textContent = getParameterByName('tipoId') || 'IDENTIFICACIÓN';
+            document.getElementById('numeroIdentificacionFirma').textContent = getParameterByName('numId') || 'NÚMERO DE ID';
+            
+            // Verificar si es contrato por tiempo determinado y actualizar cláusula de duración
+            const tipoContrato = getParameterByName('tipoContrato') || 'TÉRMINO INDEFINIDO';
+            if (tipoContrato.toUpperCase().includes('DETERMINADO') || tipoContrato.toUpperCase().includes('FIJO')) {
+                const fechaFin = getParameterByName('fechaFin') || 'FECHA DE FINALIZACIÓN';
+                document.getElementById('clausulaDuracion').innerHTML = `
+                    El presente contrato se celebra por tiempo determinado, iniciando el día 
+                    <span id="fechaInicio">${getParameterByName('fechaInicio') || (dia + ' de ' + mes + ' de ' + anio)}</span> 
+                    y finalizando el día <span>${fechaFin}</span>, sin necesidad de aviso previo.
+                `;
+            }
+            
+            // Añadir cláusulas adicionales si se proporcionan
+            const clausulasAdicionales = getParameterByName('clausulasAdicionales');
+            if (clausulasAdicionales) {
+                try {
+                    const clausulas = JSON.parse(clausulasAdicionales);
+                    const clausulasContainer = document.getElementById('clausulasAdicionales');
+                    
+                    clausulas.forEach((clausula, index) => {
+                        const clausulaDiv = document.createElement('div');
+                        clausulaDiv.className = 'clause';
+                        clausulaDiv.innerHTML = `
+                            <div class="clause-title">${clausula.titulo || `CLÁUSULA ADICIONAL ${index + 1}`}</div>
+                            <p>${clausula.contenido}</p>
+                        `;
+                        clausulasContainer.appendChild(clausulaDiv);
+                    });
+                } catch (e) {
+                    console.error('Error al procesar cláusulas adicionales:', e);
+                }
+            }
+            
+            // Esperar un poco para asegurar que todo el contenido se ha cargado
+            setTimeout(function() {
+                // Generar y descargar PDF
+                generarPDF();
+            }, 1000);
+        });
+        
+        // Función para generar PDF utilizando jsPDF y html2canvas
+        function generarPDF() {
+            const { jsPDF } = window.jspdf;
+            
+            // Obtener el nombre del archivo
+            const nombreArchivo = getParameterByName('nombreArchivo') || 'Contrato_Laboral';
+            
+            // Obtener el contenido del contrato
+            const element = document.getElementById('contractContent');
+            
+            html2canvas(element, {
+                scale: 1,
+                useCORS: true,
+                logging: false
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                const imgWidth = canvas.width;
+                const imgHeight = canvas.height;
+                const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+                const imgX = (pdfWidth - imgWidth * ratio) / 2;
+                const imgY = 0;
+                
+                // Calcular cuántas páginas necesitamos
+                const pageCount = Math.ceil(imgHeight * ratio / pdfHeight);
+                
+                // Agregar cada página al PDF
+                for (let i = 0; i < pageCount; i++) {
+                    if (i > 0) {
+                        pdf.addPage();
+                    }
+                    
+                    // Calcular qué parte de la imagen debe ir en cada página
+                    const srcY = i * pdfHeight / ratio;
+                    const srcHeight = Math.min(pdfHeight / ratio, imgHeight - srcY);
+                    
+                    pdf.addImage(
+                        imgData, 
+                        'PNG', 
+                        imgX, 
+                        imgY, 
+                        imgWidth * ratio, 
+                        imgHeight * ratio, 
+                        undefined, 
+                        'FAST', 
+                        0, 
+                        -srcY * ratio
+                    );
+                }
+                
+                // Descargar el PDF
+                pdf.save(`${nombreArchivo}.pdf`);
+                
+                // Ocultar la pantalla de carga
+                document.getElementById('loading').style.display = 'none';
+            });
+        }
+        
+        function getParameterByName(name, url = window.location.href) {
+            name = name.replace(/[\[\]]/g, '\\$&');
+            const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+    </script>
+</body>
+</html>
